@@ -1,49 +1,36 @@
-import { initWebGL2, resizeCanvasToDisplaySize } from './renderer/webgl-context';
 import './style.css';
+import { SceneManager } from './core/scene-manager';
+import { Router } from './router';
+import { createSidebar } from './ui/sidebar';
+import { getEffectConfigs } from './effects/index';
+import { createLoadingOverlay } from './ui/loading-screen';
+import { createHud } from './ui/overlay-hud';
 
 function main(): void {
-  const canvas = document.getElementById('gl-canvas') as HTMLCanvasElement | null;
+  const app = document.getElementById('app');
+  if (!app) return;
 
-  if (!canvas) {
-    showError('Canvas element not found.');
-    return;
-  }
+  const configs = getEffectConfigs();
+  const canvasContainer = document.createElement('div');
+  canvasContainer.id = 'canvas-container';
+  canvasContainer.appendChild(createLoadingOverlay());
+  const { element: hud, updateFps } = createHud();
+  canvasContainer.appendChild(hud);
 
-  const gl = initWebGL2(canvas);
+  // Append container to DOM first so it has valid size when SceneManager is created
+  app.appendChild(canvasContainer);
 
-  if (!gl) {
-    showError('WebGL2 is not supported by your browser.');
-    return;
-  }
-
-  gl.clearColor(0.08, 0.08, 0.12, 1.0);
-
-  window.addEventListener('resize', () => {
-    resizeCanvasToDisplaySize(canvas, gl);
+  const sceneManager = new SceneManager(canvasContainer, {
+    onFrame: (delta) => {
+      const safeDelta = Math.max(delta, 1e-6);
+      updateFps(1 / safeDelta);
+    },
   });
+  const router = new Router(sceneManager, canvasContainer);
+  const sidebar = createSidebar(configs, (id) => router.navigate(id));
+  app.insertBefore(sidebar, canvasContainer);
 
-  requestAnimationFrame(function frame() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    requestAnimationFrame(frame);
-  });
-}
-
-function showError(message: string): void {
-  document.body.innerHTML = `
-    <div style="
-      color: #ff6b6b;
-      font-family: monospace;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-      padding: 2rem;
-    ">
-      ${message}
-    </div>
-  `;
+  router.loadDefault();
 }
 
 main();

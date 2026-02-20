@@ -1,4 +1,4 @@
-# 3DGS Playground
+# Gaussian Splat Playground
 
 An interactive website exploring novel visual and interactive techniques for presenting 3D Gaussian Splatting in web browsers using TypeScript and WebGL2.
 
