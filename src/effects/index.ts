@@ -1,16 +1,10 @@
 import type { BaseEffect, EffectConfig } from '../core/types';
-import { DissolveReformEffect } from './dissolve-reform';
-import { SplatPaintingEffect } from './splat-painting';
-import { ShaderStylizeEffect } from './shader-stylize';
-import { PointCloudDisperseEffect } from './point-cloud-disperse';
+import { GalleryShowcaseEffect } from './gallery-showcase';
 
 export type EffectFactory = () => BaseEffect;
 
 const registry: Record<string, EffectFactory> = {
-  'dissolve-reform': () => new DissolveReformEffect(),
-  'splat-painting': () => new SplatPaintingEffect(),
-  'shader-stylize': () => new ShaderStylizeEffect(),
-  'point-cloud-disperse': () => new PointCloudDisperseEffect(),
+  'gallery-showcase': () => new GalleryShowcaseEffect(),
 };
 
 export function getEffectConfigs(): EffectConfig[] {

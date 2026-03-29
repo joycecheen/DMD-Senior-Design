@@ -1,8 +1,6 @@
 import './style.css';
 import { SceneManager } from './core/scene-manager';
 import { Router } from './router';
-import { createSidebar } from './ui/sidebar';
-import { getEffectConfigs } from './effects/index';
 import { createLoadingOverlay } from './ui/loading-screen';
 import { createHud } from './ui/overlay-hud';
 
@@ -10,7 +8,6 @@ function main(): void {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const configs = getEffectConfigs();
   const canvasContainer = document.createElement('div');
   canvasContainer.id = 'canvas-container';
   canvasContainer.appendChild(createLoadingOverlay());
@@ -27,8 +24,6 @@ function main(): void {
     },
   });
   const router = new Router(sceneManager, canvasContainer);
-  const sidebar = createSidebar(configs, (id) => router.navigate(id));
-  app.insertBefore(sidebar, canvasContainer);
 
   router.loadDefault();
 }

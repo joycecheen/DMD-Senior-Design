@@ -1,10 +1,11 @@
 import type { SceneManager } from './core/scene-manager';
 import type { BaseEffect } from './core/types';
-import { createEffect, getEffectConfigs } from './effects/index';
-import { setActiveItem } from './ui/sidebar';
+import { createEffect } from './effects/index';
 import { showLoading, hideLoading } from './ui/loading-screen';
 import { updateHud } from './ui/overlay-hud';
 import GUI from 'lil-gui';
+
+const DEFAULT_EFFECT_ID = 'gallery-showcase';
 
 export class Router {
   private sceneManager: SceneManager;
@@ -16,9 +17,6 @@ export class Router {
     this.sceneManager = sceneManager;
     this.container = container;
 
-    window.addEventListener('hashchange', () => this.onRouteChange());
-
-    // Wire up pointer events on the canvas to the active effect
     const canvas = sceneManager.canvas;
     canvas.addEventListener('pointerdown', (e) => this.currentEffect?.onPointerDown?.(e));
     canvas.addEventListener('pointermove', (e) => this.currentEffect?.onPointerMove?.(e));
@@ -26,18 +24,14 @@ export class Router {
   }
 
   async navigate(id: string): Promise<void> {
-    window.location.hash = `#/${id}`;
+    await this.loadEffect(id);
   }
 
   async onRouteChange(): Promise<void> {
-    const hash = window.location.hash.slice(2); // remove #/
-    if (hash) {
-      await this.loadEffect(hash);
-    }
+    await this.loadEffect(DEFAULT_EFFECT_ID);
   }
 
   async loadEffect(id: string): Promise<void> {
-    // Dispose current
     if (this.currentEffect) {
       this.currentEffect.dispose();
       this.currentEffect = null;
@@ -50,11 +44,9 @@ export class Router {
       this.gui = null;
     }
 
-    // Create new effect
     const effect = createEffect(id);
     if (!effect) return;
 
-    setActiveItem(id);
     showLoading(this.container);
 
     try {
@@ -75,14 +67,6 @@ export class Router {
   }
 
   loadDefault(): void {
-    const configs = getEffectConfigs();
-    if (configs.length > 0) {
-      const hash = window.location.hash.slice(2);
-      if (hash) {
-        this.loadEffect(hash);
-      } else {
-        this.navigate(configs[0].id);
-      }
-    }
+    this.loadEffect(DEFAULT_EFFECT_ID);
   }
 }

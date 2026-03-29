@@ -23,7 +23,7 @@ export class SceneManager {
     this.onFrame = options?.onFrame;
 
     this.renderer = new THREE.WebGLRenderer({ antialias: false });
-    this.renderer.setClearColor(new THREE.Color(0x0a0a0f), 1);
+    this.renderer.setClearColor(new THREE.Color(0x000000), 1);
     this.canvas = this.renderer.domElement;
     container.appendChild(this.canvas);
 
@@ -39,7 +39,18 @@ export class SceneManager {
     this.camera.lookAt(0, 0, -1);
     this.scene.add(this.camera);
 
-    this.spark = new SparkRenderer({ renderer: this.renderer });
+    this.spark = new SparkRenderer({
+      renderer: this.renderer,
+      preUpdate: true,
+      minAlpha: 0.05,
+      maxStdDev: Math.sqrt(5),
+      maxPixelRadius: 128,
+      clipXY: 1.0,
+      focalAdjustment: 1.0,
+      blurAmount: 0.0,
+      preBlurAmount: 0.0,
+      view: { sortRadial: true },
+    });
     this.scene.add(this.spark);
 
     this.controls = new SparkControls({ canvas: this.canvas });
