@@ -1,3 +1,4 @@
+// types overview
 import type { GUI } from 'lil-gui';
 import type { SceneManager } from './scene-manager';
 

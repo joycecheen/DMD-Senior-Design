@@ -1,3 +1,4 @@
+// vite env.d overview
 /// <reference types="vite/client" />
 
 declare module '*.glsl?raw' {

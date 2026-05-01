@@ -1,11 +1,10 @@
-// k-d tree for 3D k-nearest queries (graph build).
-
+// kd tree overview
 interface KdNode {
-  splitAxis: number;   // 0=x, 1=y, 2=z
+  splitAxis: number;   
   splitValue: number;
   left: KdNode | null;
   right: KdNode | null;
-  indices: number[] | null; // leaf node point indices
+  indices: number[] | null; 
 }
 
 const LEAF_SIZE = 16;
@@ -110,41 +109,6 @@ export class KdTree {
       indices: heap.map(h => h.idx),
       distances: heap.map(h => Math.sqrt(h.dist)),
     };
-  }
-
-  nearest(point: [number, number, number]): number {
-    const [qx, qy, qz] = point;
-    let bestDist = Infinity;
-    let bestIdx = 0;
-
-    const search = (node: KdNode) => {
-      if (node.indices !== null) {
-        for (const idx of node.indices) {
-          const dx = this.positions[idx * 3] - qx;
-          const dy = this.positions[idx * 3 + 1] - qy;
-          const dz = this.positions[idx * 3 + 2] - qz;
-          const dist = dx * dx + dy * dy + dz * dz;
-          if (dist < bestDist) {
-            bestDist = dist;
-            bestIdx = idx;
-          }
-        }
-        return;
-      }
-
-      const axis = node.splitAxis;
-      const query = axis === 0 ? qx : axis === 1 ? qy : qz;
-      const diff = query - node.splitValue;
-
-      const near = diff <= 0 ? node.left! : node.right!;
-      const far = diff <= 0 ? node.right! : node.left!;
-
-      search(near);
-      if (diff * diff < bestDist) search(far);
-    };
-
-    search(this.root);
-    return bestIdx;
   }
 
   private siftDown(heap: { dist: number; idx: number }[], i: number): void {

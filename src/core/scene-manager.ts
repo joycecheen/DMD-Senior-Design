@@ -1,3 +1,4 @@
+// scene manager overview
 import * as THREE from 'three';
 import { SparkRenderer, SparkControls } from '@sparkjsdev/spark';
 import type { BaseEffect } from './types';
@@ -35,8 +36,8 @@ export class SceneManager {
       0.01,
       1000
     );
-    this.camera.position.set(0, 0, 0);
-    this.camera.lookAt(0, 0, -1);
+    
+    
     this.scene.add(this.camera);
 
     this.spark = new SparkRenderer({
@@ -91,16 +92,12 @@ export class SceneManager {
   }
 
   clearScene(): void {
-    const toRemove: THREE.Object3D[] = [];
-    this.scene.traverse((obj) => {
-      if (obj !== this.scene && obj !== this.camera && obj !== this.spark) {
-        toRemove.push(obj);
-      }
-    });
-    for (const obj of toRemove) {
-      if (obj.parent === this.scene) {
-        this.scene.remove(obj);
-      }
+    
+    const removable = this.scene.children.filter(
+      (child) => child !== this.camera && child !== this.spark,
+    );
+    for (const child of removable) {
+      this.scene.remove(child);
     }
   }
 }

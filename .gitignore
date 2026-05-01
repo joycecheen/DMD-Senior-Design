@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+# OS
+.DS_Store
+
+# Office lock files
+~$*
+
+# Editor / build caches
+.vite/
+*.log
+.env
+.env.local
